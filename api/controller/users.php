@@ -4,7 +4,6 @@ require_once(ROOT . "/api/model/user.php");
 header("Content-Type:application/json");
 
 $USER = new User();
-
 $db = new Database();
 $connect = $db->connectDB();
 
@@ -15,7 +14,7 @@ if (strpos($url, "/") !== 0) {
 }
 
 /**
- * API lấy toàn bộ thông tin Users
+ * API lấy toàn bộ thông tin các Users
  */
 if ($url == '/users' && $_SERVER['REQUEST_METHOD'] == 'GET') {
     $users = $USER->getAll($connect);
@@ -45,14 +44,13 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
            "message" => "User not found!!"
         ]);
     }
-
 }
 
 /**
  * API tạo User mới
  */
 if ($url == "/users" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
-    $input = $_POST;
+    $input = json_decode(file_get_contents('php://input'), true);
 
     $userId = $USER->create($connect, $input);
 
@@ -72,20 +70,6 @@ if ($url == "/users" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-
-
-/**
- * Xoá 1 users
- */
-if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
-    $userId = $matches[1];
-    $USER->delete($connect, $userId);
-
-    echo json_encode([
-        "message" => "ok"
-    ]);
-}
-
 /**
  * Cập nhật 1 users
  */
@@ -101,10 +85,22 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 }
 
 /**
+ * Xoá 1 users
+ */
+if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
+    $userId = $matches[1];
+    $USER->delete($connect, $userId);
+
+    echo json_encode([
+        "message" => "ok"
+    ]);
+}
+
+/**
  * Đăng nhập
  */
 if ($url == "/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
-    $input = $_POST;
+    $input = json_decode(file_get_contents("php://input"), true);
 
     if ($USER->signIn($connect, $input)) {
         echo json_encode([

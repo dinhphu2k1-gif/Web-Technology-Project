@@ -1,13 +1,8 @@
 <?php
-
-class User extends Model
-{
-    private $username; //string
-    private $password; //string
-    private $birthday;
-    private $telephone;
-    private $email;
-    private $address;
+class Admin extends Model {
+    protected $username;
+    protected $password;
+    protected $level;
 
     /**
      * Đăng nhập
@@ -16,7 +11,7 @@ class User extends Model
      * @return bool
      */
     function signIn($connect, $input) {
-        $sql = "SELECT * FROM users WHERE username=:username AND password=:password;";
+        $sql = "SELECT * FROM admins WHERE username=:username AND password=:password;";
 
         $statement = $connect->prepare($sql);
         $statement->execute($input);

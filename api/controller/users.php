@@ -72,13 +72,37 @@ if ($url == "/users" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
+
+
+/**
+ * Xoá 1 users
+ */
 if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
     $userId = $matches[1];
-    $message = $USER->delete($connect, $userId);
+    $USER->delete($connect, $userId);
 
-    echo json_encode($message);
+    echo json_encode([
+        "message" => "ok"
+    ]);
 }
 
+/**
+ * Cập nhật 1 users
+ */
+if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'PATCH') {
+    $userId = $matches[1];
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $USER->update($connect, $userId, $input);
+
+    echo json_encode([
+        "message" => "ok"
+    ]);
+}
+
+/**
+ * Đăng nhập
+ */
 if ($url == "/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
     $input = $_POST;
 

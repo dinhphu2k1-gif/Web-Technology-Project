@@ -1,11 +1,14 @@
 <?php
-class Model {
+
+class Model
+{
     protected $_model;
     protected $_table;
 
-    public function  __construct() {
+    public function __construct()
+    {
         $this->_model = get_class($this);
-        $this->_table =strtolower($this->_model) . "s";
+        $this->_table = strtolower($this->_model) . "s";
     }
 
     /**
@@ -45,7 +48,8 @@ class Model {
      * @param $connect
      * @return mixed
      */
-    function getAll($connect) {
+    function getAll($connect)
+    {
         $sql = "SELECT * FROM {$this->_table};";
         $statement = $connect->prepare($sql);
         $statement->execute();
@@ -60,7 +64,8 @@ class Model {
      * @param $id
      * @return array|string[]
      */
-    function get($connect, $id) {
+    function get($connect, $id)
+    {
         $sql = "SELECT * FROM {$this->_table} WHERE id=$id;";
         $statement = $connect->prepare($sql);
         $statement->execute();
@@ -74,7 +79,8 @@ class Model {
      * @param $input
      * @return mixed|string
      */
-    function create($connect, $input) {
+    function create($connect, $input)
+    {
         $params = array();
         foreach ($input as $key => $value) {
             $params[] = ':' . $key;
@@ -86,29 +92,40 @@ class Model {
         $statement = $connect->prepare($sql);
         try {
             $statement->execute($input);
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             return null;
         }
 
         return $connect->lastInsertId();
     }
 
+    function update($connect, $id, $input)
+    {
+        $params = array();
+        foreach ($input as $key => $value) {
+            $params[] = "$key=:$key";
+        }
+
+        $sql = "UPDATE $this->_table SET "
+            . implode(', ', $params)
+            . " WHERE id=$id;";
+
+        $statement = $connect->prepare($sql);
+        $statement->execute($input);
+    }
+
     /**
      * Xoá một đối tượng
      * @param $connect
      * @param $id
-     * @return string[]
+     * @return void
      */
-    function delete($connect, $id) {
+    function delete($connect, $id)
+    {
         $sql = "DELETE FROM $this->_table WHERE id=$id;";
         $statement = $connect->prepare($sql);
 
         $statement->execute();
-
-        return [
-            "message" => "ok"
-        ];
     }
 
 }

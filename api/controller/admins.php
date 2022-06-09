@@ -99,9 +99,11 @@ if (preg_match("/admins\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] 
  */
 if ($url == "/admins/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
     $input = json_decode(file_get_contents("php://input"), true);
+    $admin = $ADMIN->signIn($connect, $input);
 
-    if ($ADMIN->signIn($connect, $input)) {
+    if ($admin) {
         echo json_encode([
+            "data" => $admin,
             "message" => "ok"
         ]);
     }

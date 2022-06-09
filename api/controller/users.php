@@ -99,11 +99,13 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 /**
  * Đăng nhập
  */
-if ($url == "/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($url == "/users/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
     $input = json_decode(file_get_contents("php://input"), true);
+    $user = $USER->signIn($connect, $input);
 
-    if ($USER->signIn($connect, $input)) {
+    if ($user) {
         echo json_encode([
+            "data" => $user,
            "message" => "ok"
         ]);
     }

@@ -21,7 +21,8 @@ class User extends Model
         $statement = $connect->prepare($sql);
         $statement->execute($input);
 
-        if ($statement->fetch(PDO::FETCH_ASSOC)) return true;
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        if ($result) return $result;
         else return false;
     }
 }

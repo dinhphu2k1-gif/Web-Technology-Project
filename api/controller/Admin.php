@@ -1,5 +1,5 @@
 <?php
-require_once (ROOT . "/api/model/admin.php");
+require_once(ROOT . "/api/model/Admin.php");
 header("Content-Type:application/json");
 
 $ADMIN = new Admin();

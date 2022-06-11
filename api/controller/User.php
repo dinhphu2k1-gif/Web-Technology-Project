@@ -1,5 +1,5 @@
 <?php
-require_once(ROOT . "/api/model/user.php");
+require_once(ROOT . "/api/model/User.php");
 
 header("Content-Type:application/json");
 

@@ -129,17 +129,33 @@ class Model
     }
 
     /**
+     * Đăng nhập
+     * @param $connect
+     * @param $input
+     * @return bool
+     */
+    function signIn($connect, $input) {
+        $sql = "SELECT * FROM $this->_table WHERE username=:username;";
+
+        $statement = $connect->prepare($sql);
+        $statement->bindValue(":username", $input['username']);
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        if (password_verify($input['password'], $result['password'])) return $result;
+        else return false;
+    }
+
+    /**
      * Tìm thông in về user hoặc admin
      * @param $connect
      * @param $username
      * @return mixed
      */
-    function findByUsername($connect, $username)
+    function findByUser($connect, $condition)
     {
-        $sql = "SELECT * FROM $this->_table WHERE username=:username;";
+        $sql = "SELECT * FROM $this->_table WHERE {$condition};";
         $statement = $connect->prepare($sql);
-
-        $statement->bindValue(":username", $username);
 
         $statement->execute();
         return $statement->fetch(PDO::FETCH_ASSOC);

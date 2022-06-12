@@ -57,7 +57,7 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
 
-    $user = $USER->findByUsername($connect, $input['username']);
+    $user = $USER->findByUser($connect, "username='{$input['username']}'");
     if ($user) {
         http_response_code(409);
         echo json_encode([
@@ -69,7 +69,6 @@ if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $input['password'] = password_hash($input['password'], PASSWORD_DEFAULT);
-
     $userId = $USER->create($connect, $input);
 
     if ($userId) {
@@ -105,7 +104,7 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
     }
 
     if (!empty($input['username'])) {
-        $user = $USER->findByUsername($connect, $input['username']);
+        $user = $USER->findByUser($connect, "username='{$input['username']}'");
         if ($user) {
             http_response_code(409);
             echo json_encode([
@@ -131,7 +130,6 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
  */
 if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
     $userId = $matches[1];
-    $USER->delete($connect, $userId);
 
     $user = $USER->get($connect, $userId);
     if (!$user) {
@@ -142,6 +140,7 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
             "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
         ]);
     } else {
+        $USER->delete($connect, $userId);
         http_response_code(200);
         echo json_encode([
             "status" => "200",
@@ -159,13 +158,19 @@ if ($url == "/users/sign_in" && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $user = $USER->signIn($connect, $input);
 
     if ($user) {
+        http_response_code(200);
         echo json_encode([
             "data" => $user,
-            "message" => "ok"
+            "status" => "200",
+            "message" => "ok",
+            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
         ]);
     } else {
+        http_response_code(401);
         echo json_encode([
-            "message" => "Wrong username or password!!"
+            "status" => "401",
+            "message" => "Wrong username or password!!",
+            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
         ]);
     }
 }

@@ -128,4 +128,21 @@ class Model
         $statement->execute();
     }
 
+    /**
+     * Tìm thông in về user hoặc admin
+     * @param $connect
+     * @param $username
+     * @return mixed
+     */
+    function findByUsername($connect, $username)
+    {
+        $sql = "SELECT * FROM $this->_table WHERE username=:username;";
+        $statement = $connect->prepare($sql);
+
+        $statement->bindValue(":username", $username);
+
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
 }

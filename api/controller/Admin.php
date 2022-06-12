@@ -1,6 +1,6 @@
 <?php
-require_once (ROOT . "/api/model/admin.php");
-header("Content-Type:application/json");
+require_once(ROOT . "/api/model/Admin.php");
+
 
 $ADMIN = new Admin();
 $db = new Database();
@@ -20,7 +20,7 @@ if ($url == '/admins' && $_SERVER['REQUEST_METHOD'] == 'GET') {
 
     echo json_encode([
         "data" => $admins,
-        "numberRecords" => count($admins),
+        "status" => "200",
         "message" => "ok"
     ]);
 }

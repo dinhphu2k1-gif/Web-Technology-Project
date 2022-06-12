@@ -1,5 +1,6 @@
 <?php
 require_once(ROOT . "/api/model/User.php");
+use \Firebase\JWT\JWT;
 
 $USER = new User();
 $db = new Database();
@@ -83,6 +84,14 @@ if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
             "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
         ]);
     }
+    else {
+        http_response_code(500);
+        echo json_encode([
+            "status" => 500,
+            "message" => "Fail to save user",
+            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
+        ]);
+    }
 }
 
 /**
@@ -158,9 +167,26 @@ if ($url == "/users/sign_in" && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $user = $USER->signIn($connect, $input);
 
     if ($user) {
+        $payload = [
+            "iss" => "localhost",
+            "iat" => time(),
+            "exp" => time() + 86400,
+            "aud" => "myusers",
+            "user_data" => [
+                "id" => $user['id'],
+                "username" => $user['username'],
+                "email" => $user['email']
+            ]
+        ];
+
+        $secret_key = "jwt123";
+        $algorithm = "HS256";
+
+        $jwt = JWT::encode($payload , $secret_key, $algorithm);
+
         http_response_code(200);
         echo json_encode([
-            "data" => $user,
+            "jwt" => $jwt,
             "status" => "200",
             "message" => "ok",
             "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]

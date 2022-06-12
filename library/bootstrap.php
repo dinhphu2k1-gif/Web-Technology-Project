@@ -5,6 +5,7 @@ require_once (ROOT . "/library/database.php");
 require_once (ROOT . "/library/router.php");
 require_once (ROOT . "/library/model.php");
 require_once (ROOT . "/routes.php");
+require_once (ROOT . "/vendor/autoload.php");
 
 $router = new Router();
 $router->setRoutes($routes);

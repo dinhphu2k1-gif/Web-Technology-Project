@@ -14,11 +14,10 @@ CREATE TABLE admins
     id       BIGINT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(50) NOT NULL,
-    level    ENUM ("Super Admin", "Admin") DEFAULT "Admin"
 ) ENGINE = InnoDB;
 
 INSERT INTO admins
-    VALUE (NULL, "admin", "123456", "Super Admin");
+    VALUE (NULL, "admin", "123456");
 
 INSERT INTO admins
-    VALUE (NULL, "admin2", "123456", "Admin");
+    VALUE (NULL, "admin2", "123456");

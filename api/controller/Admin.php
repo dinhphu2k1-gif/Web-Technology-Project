@@ -1,10 +1,8 @@
 <?php
 require_once(ROOT . "/api/model/Admin.php");
-
+use \Firebase\JWT\JWT;
 
 $ADMIN = new Admin();
-$db = new Database();
-$connect = $db->connectDB();
 
 $url = $_SERVER['REQUEST_URI'];
 // nếu url chưa có dấu "/" thì thêm vào đầu.
@@ -73,12 +71,20 @@ if ($url == "/admins" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
     $adminId = $ADMIN->create($connect, $input);
 
     if ($adminId) {
-        $input['id'] = $adminId;
-        $input['link'] = "/admins/$adminId";
+        $payload = [
+            "iss" => "localhost",
+            "iat" => time(),
+            "exp" => time() + 86400,
+            "aud" => "myadmins",
+            "admin_id" => $adminId,
+            "admin_level" => $input['level']
+        ];
+
+        $jwt = JWT::encode($payload , JWT_KEY, JWT_ALG);
 
         http_response_code(201);
         echo json_encode([
-            "data" => $input,
+            "jwt" => $jwt,
             "status" => "201",
             "message" => "created",
             "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
@@ -118,7 +124,7 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
             http_response_code(409);
             echo json_encode([
                 "status" => "409",
-                "message" => "User already exist!!",
+                "message" => "Admin already exist!!",
                 "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
             ]);
             exit();
@@ -167,9 +173,20 @@ if ($url == "/admins/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
     $admin = $ADMIN->signIn($connect, $input);
 
     if ($admin) {
+        $payload = [
+            "iss" => "localhost",
+            "iat" => time(),
+            "exp" => time() + 86400,
+            "aud" => "myadmins",
+            "admin_id" => $admin['id'],
+            "admin_level" => $admin['level']
+        ];
+
+        $jwt = JWT::encode($payload , JWT_KEY, JWT_ALG);
+
         http_response_code(200);
         echo json_encode([
-            "data" => $admin,
+            "jwt" => $jwt,
             "status" => "200",
             "message" => "ok",
             "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]

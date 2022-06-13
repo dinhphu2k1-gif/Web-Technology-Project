@@ -11,8 +11,11 @@ Run backend server: php -S localhost:8000
 ## API
 ### 1. User:
 - GET ```/users``` : get all information about the users
-- GET ```/user/:id``` : get information about a user based on id
+- GET ```/users/:id``` : get information about a user based on id
 - POST ```/users``` : create a new user
 - PATCH ```/users/:id``` : update information of a user
 - DELETE ``/users/:id`` : delete a user
-- POST ```/sign_in``` : sign in website
+- POST ```/users/sign_in``` : sign in website
+
+### 2. Admin
+Same as User

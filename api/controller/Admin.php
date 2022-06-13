@@ -14,6 +14,8 @@ if (strpos($url, "/") !== 0) {
  * API lấy toàn bộ thông tin các Admin
  */
 if ($url == '/admins' && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    // Kiểm tra xem có phải Admin hay không
+    $ADMIN->checkIsAdmin();
     $admins = $ADMIN->getAll($connect);
 
     http_response_code(200);
@@ -29,6 +31,8 @@ if ($url == '/admins' && $_SERVER['REQUEST_METHOD'] == 'GET') {
  * API lấy thông tin của 1 Admin
  */
 if (preg_match("/admins\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $ADMIN->checkIsAdmin();
+
     $adminId = $matches[1];
     $admin = $ADMIN->get($connect, $adminId);
 
@@ -76,7 +80,7 @@ if ($url == "/admins" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
             "iat" => time(),
             "exp" => time() + 86400,
             "aud" => "myadmins",
-            "admin_id" => $adminId,
+            "id" => $adminId,
             "is_admin" => true
         ];
 
@@ -104,6 +108,8 @@ if ($url == "/admins" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
  * Cập nhật 1 admin
  */
 if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'PATCH') {
+    $ADMIN->checkIsAdmin();
+
     $adminId = $matches[1];
     $input = json_decode(file_get_contents("php://input"), true);
 
@@ -141,7 +147,7 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 }
 
 /**
- * Xoá 1 users
+ * Xoá 1 admin
  */
 if (preg_match("/admins\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
     $adminId = $matches[1];
@@ -178,7 +184,7 @@ if ($url == "/admins/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
             "iat" => time(),
             "exp" => time() + 86400,
             "aud" => "myadmins",
-            "admin_id" => $admin['id'],
+            "id" => $admin['id'],
             "is_admin" => true
         ];
 

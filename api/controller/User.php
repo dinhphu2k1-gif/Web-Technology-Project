@@ -16,30 +16,9 @@ if (strpos($url, "/") !== 0) {
  * API lấy toàn bộ thông tin các Users
  */
 if ($url == '/users' && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    // Kiểm tra User có phải Admin hay không
+    $USER->checkIsAdmin();
     $users = $USER->getAll($connect);
-
-    $header = getallheaders();
-    $jwt = $header['Authorization'];
-
-    try {
-        $decode_data = JWT::decode($jwt, new Key(JWT_KEY, JWT_ALG));
-
-        // Chỉ có Admin mới được xem dữ liệu
-        if (!$decode_data->is_admin) {
-            http_response_code(401);
-            echo json_encode([
-                "status" => 401,
-                "message" => "Access Denied"
-            ]);
-            exit();
-        }
-    } catch (Exception $e) {
-        http_response_code(401);
-        echo json_encode([
-            "status" => 401,
-            "message" => $e->getMessage()
-        ]);
-    }
 
     http_response_code(200);
     echo json_encode([
@@ -55,8 +34,11 @@ if ($url == '/users' && $_SERVER['REQUEST_METHOD'] == 'GET') {
  */
 if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'GET') {
     $userId = $matches[1];
-    $user = $USER->get($connect, $userId);
 
+    // Nếu là Admin hoặc chủ sở hữu mới có thể xem được thông tin
+    $USER->checkUser($userId);
+
+    $user = $USER->get($connect, $userId);
     // Kiểm tra xem user có tồn tại hay không
     if ($user) {
         http_response_code(200);
@@ -104,7 +86,7 @@ if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
             "iat" => time(),
             "exp" => time() + 86400,
             "aud" => "myusers",
-            "user_id" => $userId,
+            "id" => $userId,
             "is_admin" => false
         ];
 
@@ -134,29 +116,7 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
     $userId = $matches[1];
     $input = json_decode(file_get_contents("php://input"), true);
 
-    $header = getallheaders();
-    $jwt = $header['Authorization'];
-
-    try {
-        $decode_data = JWT::decode($jwt, new Key(JWT_KEY, JWT_ALG));
-
-        // Kiểm tra có phải cùng 1 người hay không?
-        if ($decode_data->user_id != $userId) {
-            http_response_code(401);
-            echo json_encode([
-                "status" => 401,
-                "message" => "Access Denied"
-            ]);
-            exit();
-        }
-    } catch (Exception $e) {
-        http_response_code(401);
-        echo json_encode([
-            "status" => 401,
-            "message" => $e->getMessage()
-        ]);
-
-    }
+    $USER->checkUser($userId);
 
     // Kiểm tra xem người dùng có tồn tại hay không
     $user = $USER->get($connect, $userId);
@@ -200,6 +160,8 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
     $userId = $matches[1];
 
+    $USER->checkIsAdmin();
+
     $user = $USER->get($connect, $userId);
     if (!$user) {
         http_response_code(404);
@@ -233,7 +195,7 @@ if ($url == "/users/sign_in" && $_SERVER['REQUEST_METHOD'] == 'POST') {
             "iat" => time(),
             "exp" => time() + 86400,
             "aud" => "myusers",
-            "user_id" => $user['id'],
+            "id" => $user['id'],
             "is_admin" => false
         ];
 

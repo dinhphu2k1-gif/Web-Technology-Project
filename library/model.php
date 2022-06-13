@@ -1,4 +1,6 @@
 <?php
+use \Firebase\JWT\JWT;
+use \Firebase\JWT\Key;
 
 class Model
 {
@@ -161,4 +163,63 @@ class Model
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Kiểm tra xem User có phải là Admin hay không
+     * @return void
+     */
+    function checkIsAdmin() {
+        $header = getallheaders();
+        $jwt = $header['Authorization'];
+
+        try {
+            $decode_data = JWT::decode($jwt, new Key(JWT_KEY, JWT_ALG));
+
+            if (!$decode_data->is_admin) {
+                http_response_code(401);
+                echo json_encode([
+                    "status" => 401,
+                    "message" => "Access Denied"
+                ]);
+                exit();
+            }
+        } catch (Exception $e) {
+            http_response_code(401);
+            echo json_encode([
+                "status" => 401,
+                "message" => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Kiểm tra xem User có quyền sử dụng API hay không
+     * @param $id
+     * @return void
+     */
+    function checkUser($id) {
+        $header = getallheaders();
+        $jwt = $header['Authorization'];
+
+        try {
+            $decode_data = JWT::decode($jwt, new Key(JWT_KEY, JWT_ALG));
+
+            // Nếu User không phải là Admin hoặc cùng ID thì không được phép lấy dữ liệu
+            if (!$decode_data->is_admin) {
+                if ($decode_data->id != $id) {
+                    http_response_code(401);
+                    echo json_encode([
+                        "status" => 401,
+                        "message" => "Access Denied"
+                    ]);
+                    exit();
+                }
+            }
+        } catch (Exception $e) {
+            http_response_code(401);
+            echo json_encode([
+                "status" => 401,
+                "message" => $e->getMessage()
+            ]);
+        }
+    }
 }

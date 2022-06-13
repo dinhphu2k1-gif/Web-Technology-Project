@@ -18,6 +18,29 @@ if (strpos($url, "/") !== 0) {
 if ($url == '/users' && $_SERVER['REQUEST_METHOD'] == 'GET') {
     $users = $USER->getAll($connect);
 
+    $header = getallheaders();
+    $jwt = $header['Authorization'];
+
+    try {
+        $decode_data = JWT::decode($jwt, new Key(JWT_KEY, JWT_ALG));
+
+        // Chỉ có Admin mới được xem dữ liệu
+        if (!$decode_data->is_admin) {
+            http_response_code(401);
+            echo json_encode([
+                "status" => 401,
+                "message" => "Access Denied"
+            ]);
+            exit();
+        }
+    } catch (Exception $e) {
+        http_response_code(401);
+        echo json_encode([
+            "status" => 401,
+            "message" => $e->getMessage()
+        ]);
+    }
+
     http_response_code(200);
     echo json_encode([
         "data" => $users,
@@ -81,7 +104,8 @@ if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
             "iat" => time(),
             "exp" => time() + 86400,
             "aud" => "myusers",
-            "user_id" => $userId
+            "user_id" => $userId,
+            "is_admin" => false
         ];
 
         $jwt = JWT::encode($payload, JWT_KEY, JWT_ALG);
@@ -209,7 +233,8 @@ if ($url == "/users/sign_in" && $_SERVER['REQUEST_METHOD'] == 'POST') {
             "iat" => time(),
             "exp" => time() + 86400,
             "aud" => "myusers",
-            "user_id" => $user['id']
+            "user_id" => $user['id'],
+            "is_admin" => false
         ];
 
         $jwt = JWT::encode($payload, JWT_KEY, JWT_ALG);

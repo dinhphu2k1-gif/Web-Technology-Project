@@ -77,7 +77,7 @@ if ($url == "/admins" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
             "exp" => time() + 86400,
             "aud" => "myadmins",
             "admin_id" => $adminId,
-            "admin_level" => $input['level']
+            "is_admin" => true
         ];
 
         $jwt = JWT::encode($payload , JWT_KEY, JWT_ALG);
@@ -179,7 +179,7 @@ if ($url == "/admins/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
             "exp" => time() + 86400,
             "aud" => "myadmins",
             "admin_id" => $admin['id'],
-            "admin_level" => $admin['level']
+            "is_admin" => true
         ];
 
         $jwt = JWT::encode($payload , JWT_KEY, JWT_ALG);

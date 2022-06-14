@@ -117,7 +117,7 @@ if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
 /**
  * Cập nhật 1 users
  */
-if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'PATCH') {
+if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'PUT') {
     $userId = $matches[1];
     $input = json_decode(file_get_contents("php://input"), true);
 
@@ -164,7 +164,6 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
  */
 if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
     $userId = $matches[1];
-
     $USER->checkIsAdmin();
 
     $user = $USER->get($connect, $userId);

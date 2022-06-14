@@ -178,7 +178,18 @@ class Model
      */
     function checkIsAdmin() {
         $header = getallheaders();
-        $jwt = $header['Authorization'];
+
+        if (!empty($header['Authorization'])) {
+            $jwt = $header['Authorization'];
+        }
+        else {
+            http_response_code(401);
+            echo json_encode([
+                "status" => 401,
+                "message" => "Need access token!!"
+            ]);
+            exit();
+        }
 
         try {
             $decode_data = JWT::decode($jwt, new Key(JWT_KEY, JWT_ALG));
@@ -197,6 +208,7 @@ class Model
                 "status" => 401,
                 "message" => $e->getMessage()
             ]);
+            exit();
         }
     }
 
@@ -207,7 +219,18 @@ class Model
      */
     function checkUser($id) {
         $header = getallheaders();
-        $jwt = $header['Authorization'];
+
+        if (!empty($header['Authorization'])) {
+            $jwt = $header['Authorization'];
+        }
+        else {
+            http_response_code(401);
+            echo json_encode([
+                "status" => 401,
+                "message" => "Need access token!!"
+            ]);
+            exit();
+        }
 
         try {
             $decode_data = JWT::decode($jwt, new Key(JWT_KEY, JWT_ALG));
@@ -229,6 +252,7 @@ class Model
                 "status" => 401,
                 "message" => $e->getMessage()
             ]);
+            exit();
         }
     }
 }

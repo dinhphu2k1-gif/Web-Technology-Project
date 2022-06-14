@@ -58,6 +58,8 @@ if (preg_match("/admins\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] 
  * API tạo Admin mới
  */
 if ($url == "/admins" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $ADMIN->checkIsAdmin();
+
     $input = json_decode(file_get_contents('php://input'), true);
 
     $admin = $ADMIN->findByUser($connect, "username='{$input['username']}'");
@@ -107,7 +109,7 @@ if ($url == "/admins" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
 /**
  * Cập nhật 1 admin
  */
-if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'PATCH') {
+if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'PUT') {
     $ADMIN->checkIsAdmin();
 
     $adminId = $matches[1];
@@ -150,6 +152,8 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
  * Xoá 1 admin
  */
 if (preg_match("/admins\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
+    $ADMIN->checkIsAdmin();
+
     $adminId = $matches[1];
 
     $admin = $ADMIN->get($connect, $adminId);

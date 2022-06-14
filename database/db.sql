@@ -16,6 +16,9 @@ CREATE TABLE admins
     password VARCHAR(255) NOT NULL
 ) ENGINE = InnoDB;
 
+INSERT INTO admins
+VALUES (NULL, "admin", "$2y$10$OwbtJ1bonfTJrnu7B.CQLeg1dzQFHaUQLzcCxuy6/jqxGz2me3W92");
+
 CREATE TABLE products
 (
     id          BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -39,7 +42,7 @@ CREATE TABLE cart_details
     cart_id BIGINT NOT NULL ,
     product_id BIGINT NOT NULL ,
     quantity INT NOT NULL ,
-    price BIGINT NOT NULL ,
+    total_price BIGINT NOT NULL ,
     FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE ON UPDATE CASCADE
 )ENGINE = InnoDB;

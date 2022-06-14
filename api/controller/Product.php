@@ -81,14 +81,14 @@ if ($url == "/products" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
 /**
  * Cập nhật 1 product
  */
-if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'PATCH') {
+if (preg_match("/products\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'PUT') {
     // Kiểm tra xem có phải Admin hay không
     $PRODUCT->checkIsAdmin();
 
     $productId = $matches[1];
     $input = json_decode(file_get_contents("php://input"), true);
 
-    $product = $$PRODUCT->get($connect, $productId);
+    $product = $PRODUCT->get($connect, $productId);
     if (!$product) {
         http_response_code(404);
         echo json_encode([

@@ -101,6 +101,12 @@ class Model
         return $connect->lastInsertId();
     }
 
+    /**
+     * @param $connect
+     * @param $id
+     * @param $input
+     * @return void
+     */
     function update($connect, $id, $input)
     {
         $params = array();
@@ -144,6 +150,9 @@ class Model
         $statement->execute();
 
         $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (empty($result['password'])) return false;
+
         if (password_verify($input['password'], $result['password'])) return $result;
         else return false;
     }

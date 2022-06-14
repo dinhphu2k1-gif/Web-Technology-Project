@@ -1,5 +1,6 @@
 <?php
 require_once(ROOT . "/api/model/User.php");
+require_once(ROOT . "/api/model/Cart.php");
 
 use \Firebase\JWT\JWT;
 use \Firebase\JWT\Key;
@@ -99,6 +100,10 @@ if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
             "message" => "created",
             "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
         ]);
+
+        // Sau khi tạo 1 user mới, đồng thời tạo 1 giỏ hàng
+        $cart = new Cart();
+        $cart->create($connect, ["user_id" => $userId]);
     } else {
         http_response_code(500);
         echo json_encode([

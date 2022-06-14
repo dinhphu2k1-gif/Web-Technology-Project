@@ -2,5 +2,6 @@
 $routes = [
     'users' => 'User.php',
     'admins' => 'Admin.php',
-    'products' => 'Product.php'
+    'products' => 'Product.php',
+    'carts' => 'Cart.php'
 ];

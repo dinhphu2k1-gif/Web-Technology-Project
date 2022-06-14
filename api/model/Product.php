@@ -1,10 +1,14 @@
 <?php
-class Product {
+class Product extends Model {
     protected $id;
 
     protected $name; // tên sản phẩm
 
-    protected $properties = array();
+    protected $image;
+
+    protected $description;
+
+    protected $price;
 
     protected $year;
 }

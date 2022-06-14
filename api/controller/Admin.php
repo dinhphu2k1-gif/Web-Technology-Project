@@ -98,7 +98,7 @@ if ($url == "/admins" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
         http_response_code(500);
         echo json_encode([
             "status" => 500,
-            "message" => "Fail to save user",
+            "message" => "Fail to save admin",
             "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
         ]);
     }

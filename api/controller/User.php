@@ -104,14 +104,15 @@ if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
         // Sau khi tạo 1 user mới, đồng thời tạo 1 giỏ hàng
         $cart = new Cart();
         $cart->create($connect, ["user_id" => $userId]);
-    } else {
-        http_response_code(500);
-        echo json_encode([
-            "status" => 500,
-            "message" => "Fail to save User!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
     }
+//    else {
+//        http_response_code(500);
+//        echo json_encode([
+//            "status" => 500,
+//            "message" => "Fail to save User!!",
+//            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
+//        ]);
+//    }
 }
 
 /**

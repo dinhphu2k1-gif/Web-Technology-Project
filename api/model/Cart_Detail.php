@@ -1,5 +1,4 @@
 <?php
-
 class Cart_Detail extends Model
 {
     protected $id;
@@ -51,4 +50,20 @@ class Cart_Detail extends Model
     }
 
 
+    /**
+     * Xoá toàn bộ sản phẩm trong giỏ hàng
+     * @param $connect
+     * @param $userId
+     * @return void
+     */
+    function deleteAll($connect, $userId) {
+        $sql = "DELETE cd.*
+                FROM cart_details AS cd 
+                INNER JOIN carts AS c ON cd.cart_id = c.id
+                WHERE c.user_id = {$userId};
+                ";
+
+        $statement = $connect->prepare($sql);
+        $statement->execute();
+    }
 }

@@ -104,3 +104,19 @@ if (preg_match("/carts\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_MET
         "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
     ]);
 }
+
+/**
+ *API xoá toàn bộ sản phẩm trong giỏ hàng
+ */
+if (preg_match("/carts\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
+    $userId = $matches[1];
+    $CART->checkUser($userId);
+
+    $CART->deleteAll($connect, $userId);
+    http_response_code(200);
+    echo json_encode([
+        "status" => "200",
+        "message" => "ok",
+        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
+    ]);
+}

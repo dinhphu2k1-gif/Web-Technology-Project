@@ -54,7 +54,17 @@ class Model
     {
         $sql = "SELECT * FROM {$this->_table};";
         $statement = $connect->prepare($sql);
-        $statement->execute();
+
+        try {
+            $statement->execute();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode([
+                "status" => 500,
+                "message" => $e->getMessage()
+            ]);
+            exit();
+        }
         $statement->setFetchMode(PDO::FETCH_ASSOC);
 
         return $statement->fetchAll();
@@ -70,7 +80,17 @@ class Model
     {
         $sql = "SELECT * FROM {$this->_table} WHERE id=$id;";
         $statement = $connect->prepare($sql);
-        $statement->execute();
+
+        try {
+            $statement->execute();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode([
+                "status" => 500,
+                "message" => $e->getMessage()
+            ]);
+            exit();
+        }
 
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
@@ -89,13 +109,18 @@ class Model
         }
 
         $sql = "INSERT INTO $this->_table
-                VALUE (NULL, " . implode(', ', $params) . ");";
+                VALUES (NULL, " . implode(', ', $params) . ");";
 
         $statement = $connect->prepare($sql);
         try {
             $statement->execute($input);
         } catch (PDOException $e) {
-            return null;
+            http_response_code(500);
+            echo json_encode([
+                "status" => 500,
+                "message" => $e->getMessage()
+            ]);
+            exit();
         }
 
         return $connect->lastInsertId();
@@ -119,7 +144,16 @@ class Model
             . " WHERE id=$id;";
 
         $statement = $connect->prepare($sql);
-        $statement->execute($input);
+        try {
+            $statement->execute($input);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode([
+                "status" => 500,
+                "message" => $e->getMessage()
+            ]);
+            exit();
+        }
     }
 
     /**
@@ -133,7 +167,16 @@ class Model
         $sql = "DELETE FROM $this->_table WHERE id=$id;";
         $statement = $connect->prepare($sql);
 
-        $statement->execute();
+        try {
+            $statement->execute();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode([
+                "status" => 500,
+                "message" => $e->getMessage()
+            ]);
+            exit();
+        }
     }
 
     /**
@@ -147,7 +190,16 @@ class Model
 
         $statement = $connect->prepare($sql);
         $statement->bindValue(":username", $input['username']);
-        $statement->execute();
+        try {
+            $statement->execute();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode([
+                "status" => 500,
+                "message" => $e->getMessage()
+            ]);
+            exit();
+        }
 
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
@@ -168,7 +220,16 @@ class Model
         $sql = "SELECT * FROM $this->_table WHERE {$condition};";
         $statement = $connect->prepare($sql);
 
-        $statement->execute();
+        try {
+            $statement->execute();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode([
+                "status" => 500,
+                "message" => $e->getMessage()
+            ]);
+            exit();
+        }
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
 

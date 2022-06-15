@@ -1,10 +1,12 @@
 <?php
 require_once(ROOT . "/api/model/Bill.php");
 require_once(ROOT . "/api/model/Bill_Detail.php");
+require_once(ROOT . "/api/model/Cart_Detail.php");
 use \Firebase\JWT\JWT;
 use \Firebase\JWT\Key;
 
-$BILL = new Bill_Detail();
+$BILL = new Bill();
+$CART = new Cart_Detail();
 
 $url = $_SERVER['REQUEST_URI'];
 // nếu url chưa có dấu "/" thì thêm vào đầu.
@@ -57,6 +59,7 @@ if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
  * API tạo hoá đơn
  * Note: - tạo hoá đơn
  *       - sao chép các sản phẩm từ bảng order_details sang bảng bill_details
+ *       - xoá các sản phẩm ở giỏ hàng
  */
 if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $userId = $matches[1];
@@ -65,5 +68,35 @@ if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
     $input = json_decode(file_get_contents("php://input"), true);
     $billId = $BILL->create($connect, $input);
 
+    if ($billId) {
+        http_response_code(201);
+        echo json_encode([
+            "status" => "201",
+            "message" => "created",
+            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
+        ]);
 
+        // chuyển các sản phẩm từ giỏ hàng sang hoá đơn
+        $BILL->addProducts($connect, $userId, $billId);
+
+        // xoá các sản phẩm trong giỏ hàng
+        $CART->deleteAll($connect, $userId);
+    }
+}
+
+/**
+ * API xoá đơn hàng
+ */
+if (preg_match("/bills\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
+    $userId = $matches[1];
+    $BILL->checkUser($userId);
+
+    $billId = $matches[2];
+    $BILL->delete($connect, $billId);
+    http_response_code(200);
+    echo json_encode([
+        "status" => "200",
+        "message" => "ok",
+        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
+    ]);
 }

@@ -96,3 +96,18 @@ VD: ![img.png](image/img_13.png)
 - DELETE ```//carts/:user_id/:id``` : xoá sản phẩm khỏi giỏ hàng
 
 VD: ![img.png](image/img_14.png)
+
+### 5. Bill
+- GET ```/bills``` : lấy thông tin các đơn hàng (chỉ Admin)
+
+VD: ![img.png](image/img_15.png)
+
+- GET ```/bills/:user_id``` : lấy thông tin các đơn hàng (dành cho User)
+
+VD: ![img.png](image/img_16.png)
+
+- POST ```/bills/:user_id``` : tạo hoá đơn 
+
+VD: ![img.png](image/img_17.png)
+
+- DELETE ```/bills/:user_id/:bill_id``` : xoá đơn hàng

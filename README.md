@@ -3,6 +3,7 @@
 ---
 Cài đặt :
 ```
+PHP version: 8.1.5 - có sẵn trong XAMPP, thêm đường dẫn là có thể dùng được
 Install xampp: https://www.apachefriends.org/download.html
 Download source code : git clone https://github.com/dinhphu2k1-gif/Web-Technology-Project.git
 Run backend server: php -S localhost:8000

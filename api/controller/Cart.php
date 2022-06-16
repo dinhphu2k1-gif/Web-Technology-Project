@@ -103,6 +103,7 @@ if (preg_match("/carts\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_MET
         "message" => "ok",
         "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
     ]);
+    echo 1;
 }
 
 /**

@@ -91,6 +91,7 @@ if ($url == "/admins" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
         http_response_code(201);
         echo json_encode([
             "jwt" => $jwt,
+            "admin_id" => $adminId,
             "status" => "201",
             "message" => "created",
             "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
@@ -197,6 +198,7 @@ if ($url == "/admins/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
         http_response_code(200);
         echo json_encode([
             "jwt" => $jwt,
+            "admin_id" => $admin['id'],
             "status" => "200",
             "message" => "ok",
             "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]

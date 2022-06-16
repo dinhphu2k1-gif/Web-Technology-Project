@@ -108,7 +108,7 @@ if (preg_match("/carts\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_MET
 /**
  *API xoá toàn bộ sản phẩm trong giỏ hàng
  */
-if (preg_match("/carts\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
+else if (preg_match("/carts\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
     $userId = $matches[1];
     $CART->checkUser($userId);
 

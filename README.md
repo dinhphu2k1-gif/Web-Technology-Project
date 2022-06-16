@@ -94,7 +94,7 @@ note: :id là id trong bảng cart_detail
 
 VD: ![img.png](image/img_13.png)
 
-- DELETE ```//carts/:user_id/:id``` : xoá sản phẩm khỏi giỏ hàng
+- DELETE ```/carts/:user_id/:id``` : xoá sản phẩm khỏi giỏ hàng
 
 VD: ![img.png](image/img_14.png)
 

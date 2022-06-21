@@ -109,8 +109,8 @@ class Model
         }
 
         $sql = "INSERT INTO $this->_table
-                VALUES (NULL, " . implode(', ', $params) . ");";
-
+                VALUES (NULL," . implode(', ', $params) . ");";
+        echo $sql;
         $statement = $connect->prepare($sql);
         try {
             $statement->execute($input);
@@ -232,7 +232,29 @@ class Model
         }
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
+    /**
+     * Hàm lấy id của người dùng nếu có
+     * @return id
+     */
+    function getIdUser() {
+        $header = getallheaders();
 
+        if (!empty($header['Authorization'])) {
+            $jwt = $header['Authorization'];
+        }
+        else {
+            return false;
+        }
+        try {
+            $decode_data = JWT::decode($jwt, new Key(JWT_KEY, JWT_ALG));
+
+            if (!$decode_data->is_admin) {
+                return $decode_data->id;
+            }
+        } catch (Exception $e) {
+            return false;
+        }
+    }
     /**
      * Kiểm tra xem User có phải là Admin hay không
      * @return void
@@ -271,6 +293,7 @@ class Model
             ]);
             exit();
         }
+        return true;
     }
 
     /**

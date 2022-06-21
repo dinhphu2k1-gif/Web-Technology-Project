@@ -30,7 +30,46 @@ if ($url == '/bills' && $_SERVER['REQUEST_METHOD'] == 'GET') {
         "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
     ]);
 }
+/**
+ * API lấy chi tiết 1 đơn hàng bằng id
+ */
+if (preg_match("/bills\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $userId = $matches[1];
+    $billId = $matches[2];
+    $BILL->checkUser($userId);
 
+    $bill = $BILL->get($connect, $billId);
+    $products = $BILL->getProducts($connect, $billId);
+    $bill['list_product'] = $products;
+    http_response_code(200);
+    echo json_encode([
+        "data" => $bill,
+        "status" => "200",
+        "message" => "ok",
+        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
+    ]);
+    exit();
+//    if($BILL->checkIsAdmin() || $BILL->checkUser($userId)){
+//        $bill = $BILL->get($connect, $billId);
+//        $products = $BILL->getProducts($connect, $billId);
+//        $bill['list_product'] = $products;
+//        http_response_code(200);
+//        echo json_encode([
+//            "data" => $bill,
+//            "status" => "200",
+//            "message" => "ok",
+//            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
+//        ]);
+//    } else {
+//        http_response_code(401);
+//        echo json_encode([
+//            "status" => 401,
+//            "message" => "Access Denied"
+//        ]);
+//        exit();
+//    }
+
+}
 /**
  * API lấy danh sách các đơn đặt hàng (dành cho User)
  */

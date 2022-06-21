@@ -21,6 +21,5 @@ $db = new Database();
 $connect = $db->connectDB();
 
 $url = $_SERVER['REQUEST_URI'];
-
 require_once (ROOT . "/api/controller/" . $router->getFileName($url));
 

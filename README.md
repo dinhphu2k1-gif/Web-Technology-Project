@@ -102,6 +102,8 @@ VD: ![img.png](image/img_14.png)
 - GET ```/bills``` : lấy thông tin các đơn hàng (chỉ Admin)
 
 VD: ![img.png](image/img_15.png)
+- GET ```/bills/:user_id/:bill_id``` : lấy chi tiết một đơn hàng (dành cho User sở hữu bill và Admin)
+VD: ![img.png](image/img_19.png)
 
 - GET ```/bills/:user_id``` : lấy thông tin các đơn hàng (dành cho User)
 
@@ -112,3 +114,6 @@ VD: ![img.png](image/img_16.png)
 VD: ![img.png](image/img_17.png)
 
 - DELETE ```/bills/:user_id/:bill_id``` : xoá đơn hàng
+### 6. Notification
+- GET  ```/notifications``` : lấy các thông báo (Admin và user)
+- VD: ![img.png](image/img_18.png)

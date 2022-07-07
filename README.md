@@ -102,6 +102,8 @@ VD: ![img.png](image/img_14.png)
 - GET ```/bills``` : lấy thông tin các đơn hàng (chỉ Admin)
 
 VD: ![img.png](image/img_15.png)
+- PUT ```/bills/:bill_id```: cập nhật trạng thái đơn hàng (chỉ admin) (Có 3 trạng thái: 'denied', 'accepted', 'pending')
+VD: ![img.png](image/img_20.png)
 - GET ```/bills/:user_id/:bill_id``` : lấy chi tiết một đơn hàng (dành cho User sở hữu bill và Admin)
 VD: ![img.png](image/img_19.png)
 

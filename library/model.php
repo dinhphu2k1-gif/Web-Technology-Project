@@ -78,9 +78,9 @@ class Model
      */
     function get($connect, $id)
     {
-        $sql = "SELECT * FROM {$this->_table} WHERE id=$id;";
+        $sql = "SELECT * FROM {$this->_table} WHERE id=:id;";
         $statement = $connect->prepare($sql);
-
+        $statement->bindValue(':id', $id);
         try {
             $statement->execute();
         } catch (PDOException $e) {

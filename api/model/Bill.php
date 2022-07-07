@@ -133,4 +133,24 @@ class Bill extends Model {
                 WHERE 
         ";
     }
+    public function updateStatus($connect, $id, $status){
+        $bill = $this->get($connect, $id);
+        if($bill){
+            $sql = "UPDATE `bills` SET status = :status where id = :id;";
+            $statement = $connect->prepare($sql);
+            try {
+                $statement->bindValue(':status', $status);
+                $statement->bindValue(':id', $id);
+                $statement->execute();
+                return true;
+            } catch (Exception $e){
+                echo $e->getMessage();
+                Response::responseInfo(404, "Bill are not updated!!");
+                return false;
+            }
+        } else {
+            Response::responseInfo(404, "Bill not found!!");
+            return false;
+        }
+    }
 }

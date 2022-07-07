@@ -9,7 +9,32 @@ $url = $_SERVER['REQUEST_URI'];
 if (strpos($url, "/") !== 0) {
     $url = "/$url";
 }
+/**
+ * Đăng nhập
+ */
+if ($url == "/admins/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $input = json_decode(file_get_contents("php://input"), true);
+    $admin = $ADMIN->signIn($connect, $input);
+    echo "1";
+    if ($admin) {
+        $payload = [
+            "iss" => "localhost",
+            "iat" => time(),
+            "exp" => time() + 86400,
+            "aud" => "myadmins",
+            "id" => $admin['id'],
+            "is_admin" => true
+        ];
 
+        $jwt = JWT::encode($payload , JWT_KEY, JWT_ALG);
+
+        $data = array("jwt" => $jwt, "admin_id" => $admin['id']);
+        Response::responseMergedData(200, "ok", $data);
+    } else {
+        Response::responseInfo(401, "Wrong username or password!!");
+    }
+    exit();
+}
 /**
  * API lấy toàn bộ thông tin các Admin
  */
@@ -118,29 +143,4 @@ if (preg_match("/admins\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] 
     }
 }
 
-/**
- * Đăng nhập
- */
-if ($url == "/admins/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
-    $input = json_decode(file_get_contents("php://input"), true);
-    $admin = $ADMIN->signIn($connect, $input);
 
-    if ($admin) {
-        $payload = [
-            "iss" => "localhost",
-            "iat" => time(),
-            "exp" => time() + 86400,
-            "aud" => "myadmins",
-            "id" => $admin['id'],
-            "is_admin" => true
-        ];
-
-        $jwt = JWT::encode($payload , JWT_KEY, JWT_ALG);
-
-        $data = array("jwt" => $jwt, "admin_id" => $admin['id']);
-        Response::responseMergedData(100, "ok", $data);
-    }
-    else {
-        Response::responseInfo(401, "Wrong username or password!!");
-    }
-}

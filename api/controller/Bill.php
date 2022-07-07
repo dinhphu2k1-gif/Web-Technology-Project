@@ -31,6 +31,7 @@ if ($url == '/bills' && $_SERVER['REQUEST_METHOD'] == 'GET') {
         "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
     ]);
 }
+
 /**
  * API lấy chi tiết 1 đơn hàng bằng id
  */
@@ -75,6 +76,23 @@ if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
         "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
     ]);
 }
+/**
+ * API chỉnh sửa trạng thái đơn hàng
+ */
+if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'PUT') {
+    $billId = $matches[1];
+    $input = json_decode(file_get_contents("php://input"), true);
+    if(array_key_exists('status', $input)){
+        $update = $BILL->updateStatus($connect, $billId, $input['status']);
+        if($update){
+            $NOTIFICATION->init($billId, "Bạn vừa thay đổi trạng thái đơn hàng(Mã đơn hàng: {$billId})", true);
+            $NOTIFICATION->insertNotification($connect);
+            $NOTIFICATION->init($billId, "Đơn hàng được thay đổi thành: '{$input['status']}'(Mã đơn hàng: {$billId})", true);
+            $NOTIFICATION->insertNotification($connect);
+            Response::responseInfo(200, "bill is updated!!");
+        }
+    }
+}
 
 /**
  * API tạo hoá đơn
@@ -102,9 +120,9 @@ if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 
         // xoá các sản phẩm trong giỏ hàng
         $CART->deleteAll($connect, $userId);
-        $NOTIFICATION->init($billId, "Có một đơn đặt hàng mới. Mã đơn hàng {$billId}!", 'yes');
+        $NOTIFICATION->init($billId, "Có một đơn đặt hàng mới (Mã đơn hàng {$billId})", 'yes');
         $NOTIFICATION->insertNotification($connect);
-        $NOTIFICATION->init($billId, "Bạn đã đặt đơn hàng thành công. Mã đơn hàng: {$billId}!", 'no');
+        $NOTIFICATION->init($billId, "Bạn đã đặt đơn hàng thành công (Mã đơn hàng {$billId})", 'no');
         $NOTIFICATION->insertNotification($connect);
     }
 

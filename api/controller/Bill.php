@@ -2,12 +2,13 @@
 require_once(ROOT . "/api/model/Bill.php");
 require_once(ROOT . "/api/model/Bill_Detail.php");
 require_once(ROOT . "/api/model/Cart_Detail.php");
+require_once(ROOT . "/api/model/Notification.php");
 use \Firebase\JWT\JWT;
 use \Firebase\JWT\Key;
 
 $BILL = new Bill();
 $CART = new Cart_Detail();
-
+$NOTIFICATION = new Notification();
 $url = $_SERVER['REQUEST_URI'];
 // nếu url chưa có dấu "/" thì thêm vào đầu.
 if (strpos($url, "/") !== 0) {
@@ -49,25 +50,6 @@ if (preg_match("/bills\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_MET
         "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
     ]);
     exit();
-//    if($BILL->checkIsAdmin() || $BILL->checkUser($userId)){
-//        $bill = $BILL->get($connect, $billId);
-//        $products = $BILL->getProducts($connect, $billId);
-//        $bill['list_product'] = $products;
-//        http_response_code(200);
-//        echo json_encode([
-//            "data" => $bill,
-//            "status" => "200",
-//            "message" => "ok",
-//            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-//        ]);
-//    } else {
-//        http_response_code(401);
-//        echo json_encode([
-//            "status" => 401,
-//            "message" => "Access Denied"
-//        ]);
-//        exit();
-//    }
 
 }
 /**
@@ -121,6 +103,11 @@ if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
         // xoá các sản phẩm trong giỏ hàng
         $CART->deleteAll($connect, $userId);
     }
+
+    $NOTIFICATION->init($billId, "Có một đơn đặt hàng mới. Mã đơn hàng {$billId}!", 'yes');
+    $NOTIFICATION->insertNotification($connect);
+    $NOTIFICATION->init($billId, "Bạn đã đặt đơn hàng thành công. Mã đơn hàng: {$billId}!", 'no');
+    $NOTIFICATION->insertNotification($connect);
 }
 
 /**

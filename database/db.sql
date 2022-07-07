@@ -68,3 +68,12 @@ CREATE TABLE bill_details
     FOREIGN KEY (bill_id) REFERENCES bills (id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
+
+CREATE TABLE notifications(
+    id bigint AUTO_INCREMENT PRIMARY KEY not null,
+    message TEXT NOT NULL,
+    bill_id bigint NOT NULL,
+    isadmin ENUM('yes', 'no') NOT NULL,
+    createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (bill_id) REFERENCES bills (id) ON DELETE CASCADE ON UPDATE CASCADE
+);

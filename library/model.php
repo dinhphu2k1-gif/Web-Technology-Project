@@ -110,7 +110,6 @@ class Model
 
         $sql = "INSERT INTO $this->_table
                 VALUES (NULL," . implode(', ', $params) . ");";
-        echo $sql;
         $statement = $connect->prepare($sql);
         try {
             $statement->execute($input);

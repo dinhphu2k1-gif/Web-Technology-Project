@@ -85,8 +85,8 @@ if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $userId = $matches[1];
     $BILL->checkUser($userId);
-
     $input = json_decode(file_get_contents("php://input"), true);
+    $input['time_create'] = date("Y/m/d h:i:s",time());
     $billId = $BILL->create($connect, $input);
 
     if ($billId) {
@@ -102,12 +102,13 @@ if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 
         // xoá các sản phẩm trong giỏ hàng
         $CART->deleteAll($connect, $userId);
+        $NOTIFICATION->init($billId, "Có một đơn đặt hàng mới. Mã đơn hàng {$billId}!", 'yes');
+        $NOTIFICATION->insertNotification($connect);
+        $NOTIFICATION->init($billId, "Bạn đã đặt đơn hàng thành công. Mã đơn hàng: {$billId}!", 'no');
+        $NOTIFICATION->insertNotification($connect);
     }
 
-    $NOTIFICATION->init($billId, "Có một đơn đặt hàng mới. Mã đơn hàng {$billId}!", 'yes');
-    $NOTIFICATION->insertNotification($connect);
-    $NOTIFICATION->init($billId, "Bạn đã đặt đơn hàng thành công. Mã đơn hàng: {$billId}!", 'no');
-    $NOTIFICATION->insertNotification($connect);
+
 }
 
 /**

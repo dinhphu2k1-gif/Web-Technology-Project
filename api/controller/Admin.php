@@ -17,14 +17,7 @@ if ($url == '/admins' && $_SERVER['REQUEST_METHOD'] == 'GET') {
     // Kiểm tra xem có phải Admin hay không
     $ADMIN->checkIsAdmin();
     $admins = $ADMIN->getAll($connect);
-
-    http_response_code(200);
-    echo json_encode([
-        "data" => $admins,
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+    Response::responseData(200, "ok", $admins);
 }
 
 /**
@@ -37,20 +30,9 @@ if (preg_match("/admins\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] 
     $admin = $ADMIN->get($connect, $adminId);
 
     if ($admin) {
-        http_response_code(200);
-        echo json_encode([
-            "data" => $admin,
-            "status" => "200",
-            "message" => "ok",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseData(200, "ok", $admin);
     } else {
-        http_response_code(404);
-        echo json_encode([
-            "status" => "404",
-            "message" => "Admin not found!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(404, "Admin not found!!");
     }
 }
 
@@ -64,12 +46,7 @@ if ($url == "/admins" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $admin = $ADMIN->findByUser($connect, "username='{$input['username']}'");
     if ($admin) {
-        http_response_code(409);
-        echo json_encode([
-            "status" => "409",
-            "message" => "Admin already exist!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(409, "Admin already exist!!");
         exit();
     }
 
@@ -88,22 +65,11 @@ if ($url == "/admins" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $jwt = JWT::encode($payload , JWT_KEY, JWT_ALG);
 
-        http_response_code(201);
-        echo json_encode([
-            "jwt" => $jwt,
-            "admin_id" => $adminId,
-            "status" => "201",
-            "message" => "created",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        $data = array("jwt" => $jwt, "admin_id" => $adminId);
+        Response::responseMergedData(201, "created", $data);
     }
     else {
-        http_response_code(500);
-        echo json_encode([
-            "status" => 500,
-            "message" => "Fail to save admin",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(500, "Fail to save admin");
     }
 }
 
@@ -118,35 +84,21 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 
     $admin = $ADMIN->get($connect, $adminId);
     if (!$admin) {
-        http_response_code(404);
-        echo json_encode([
-            "status" => "404",
-            "message" => "Admin not found!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(404, "Admin not found!!");
         exit();
     }
 
     if (!empty($input['username'])) {
         $admin = $ADMIN->findByUser($connect, "username='{$input['username']}'");
         if ($admin) {
-            http_response_code(409);
-            echo json_encode([
-                "status" => "409",
-                "message" => "Admin already exist!!",
-                "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-            ]);
+            Response::responseInfo(409, "Admin already exist!!");
             exit();
         }
     }
 
     $ADMIN->update($connect, $adminId, $input);
-    http_response_code(200);
-    echo json_encode([
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+
+    Response::responseInfo(200, "ok");
 }
 
 /**
@@ -159,20 +111,10 @@ if (preg_match("/admins\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] 
 
     $admin = $ADMIN->get($connect, $adminId);
     if (!$admin) {
-        http_response_code(404);
-        echo json_encode([
-            "status" => "404",
-            "message" => "Admin not found!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(404, "Admin not found!!");
     } else {
         $ADMIN->delete($connect, $adminId);
-        http_response_code(200);
-        echo json_encode([
-            "status" => "200",
-            "message" => "ok",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(200, ok);
     }
 }
 
@@ -195,21 +137,10 @@ if ($url == "/admins/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $jwt = JWT::encode($payload , JWT_KEY, JWT_ALG);
 
-        http_response_code(200);
-        echo json_encode([
-            "jwt" => $jwt,
-            "admin_id" => $admin['id'],
-            "status" => "200",
-            "message" => "ok",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        $data = array("jwt" => $jwt, "admin_id" => $admin['id']);
+        Response::responseMergedData(100, "ok", $data);
     }
     else {
-        http_response_code(401);
-        echo json_encode([
-            "status" => "401",
-            "message" => "Wrong username or password!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(401, "Wrong username or password!!");
     }
 }

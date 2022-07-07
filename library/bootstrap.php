@@ -6,6 +6,7 @@ require_once (ROOT . "/library/router.php");
 require_once (ROOT . "/library/model.php");
 require_once (ROOT . "/routes.php");
 require_once (ROOT . "/vendor/autoload.php");
+require_once (ROOT . "/library/Response.php");
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Credentials: true");

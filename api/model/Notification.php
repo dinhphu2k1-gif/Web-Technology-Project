@@ -12,7 +12,7 @@ class Notification extends Model {
         $this->isadmin = $isadmin;
     }
     public function insertNotification($connect){
-        $input = array("message" => $this->message, "bill_id" => $this->bill_id, "isadmin" => $this->isadmin, "createdAt" => "2022-7-7");
+        $input = array("message" => $this->message, "bill_id" => $this->bill_id, "isadmin" => $this->isadmin, "CreatedAt" => date("Y/m/d h:i:s",time()));
         $this->create($connect, $input);
         return true;
     }

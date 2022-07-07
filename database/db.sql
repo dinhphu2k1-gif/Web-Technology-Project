@@ -54,7 +54,7 @@ CREATE TABLE bills
     telephone   INT(11)      NOT NULL,
     address      VARCHAR(100) NOT NULL,
     time_create DATETIME     NOT NULL      DEFAULT NOW(),
-    status      ENUM ("accept", "pending") DEFAULT "pending",
+    status      ENUM ("accepted", "pending", "denied") DEFAULT "pending",
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB;
 

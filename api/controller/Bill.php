@@ -80,14 +80,15 @@ if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
  * API chỉnh sửa trạng thái đơn hàng
  */
 if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'PUT') {
+    $BILL->checkIsAdmin();
     $billId = $matches[1];
     $input = json_decode(file_get_contents("php://input"), true);
     if(array_key_exists('status', $input)){
         $update = $BILL->updateStatus($connect, $billId, $input['status']);
         if($update){
-            $NOTIFICATION->init($billId, "Bạn vừa thay đổi trạng thái đơn hàng(Mã đơn hàng: {$billId})", true);
+            $NOTIFICATION->init($billId, "Bạn vừa thay đổi trạng thái đơn hàng(Mã đơn hàng: {$billId})", 'yes');
             $NOTIFICATION->insertNotification($connect);
-            $NOTIFICATION->init($billId, "Đơn hàng được thay đổi thành: '{$input['status']}'(Mã đơn hàng: {$billId})", true);
+            $NOTIFICATION->init($billId, "Đơn hàng được thay đổi thành: '{$input['status']}'(Mã đơn hàng: {$billId})", 'no');
             $NOTIFICATION->insertNotification($connect);
             Response::responseInfo(200, "bill is updated!!");
         }

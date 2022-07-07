@@ -26,12 +26,12 @@ class Notification extends Model {
         if(!$userId){
             $sql = "Select * from notifications, bills
                 where bills.id = notifications.bill_id and isadmin = 'yes' 
-                order by notifications.createdAt;";
+                order by notifications.createdAt DESC;";
 
         } else {
             $sql = "Select * from notifications, bills
                 where bills.id = notifications.bill_id and isadmin = 'no' and bills.user_id = '{$userId}'
-                order by notifications.createdAt;";
+                order by notifications.createdAt DESC;";
         }
         $statement = $connect->prepare($sql);
         try {

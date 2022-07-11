@@ -23,13 +23,7 @@ if ($url == '/bills' && $_SERVER['REQUEST_METHOD'] == 'GET') {
 
     $bills = $BILL->getAll($connect);
 
-    http_response_code(200);
-    echo json_encode([
-        "data" => $bills,
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+    Response::responseData(200, "ok", $bills);
 }
 
 /**
@@ -43,13 +37,8 @@ if (preg_match("/bills\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_MET
     $bill = $BILL->get($connect, $billId);
     $products = $BILL->getProducts($connect, $billId);
     $bill['list_product'] = $products;
-    http_response_code(200);
-    echo json_encode([
-        "data" => $bill,
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+
+    Response::responseData(200, "ok", $bill);
     exit();
 
 }
@@ -68,13 +57,8 @@ if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
         $bills[$i]['list_products'] = $products;
     }
 
-    http_response_code(200);
-    echo json_encode([
-        "data" => $bills,
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+
+    Response::responseData(200, "ok", $bills);
 }
 /**
  * API chỉnh sửa trạng thái đơn hàng
@@ -139,10 +123,6 @@ if (preg_match("/bills\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_MET
 
     $billId = $matches[2];
     $BILL->delete($connect, $billId);
-    http_response_code(200);
-    echo json_encode([
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+
+    Response::responseInfo(200, "ok");
 }

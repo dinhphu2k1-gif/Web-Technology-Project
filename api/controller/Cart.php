@@ -21,13 +21,7 @@ if (preg_match("/carts\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 
     $products = $CART->getAllProducts($connect, $userId);
 
-    http_response_code(200);
-    echo json_encode([
-        "data" => $products,
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+    Response::responseData(200, "ok", $products);
 }
 
 /**
@@ -42,29 +36,15 @@ if (preg_match("/carts\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
     // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng hay chưa
     $productExist = $CART->findByProductId($connect, $input['cart_id'], $input['product_id']);
     if ($productExist) {
-        http_response_code(409);
-        echo json_encode([
-            "status" => 409,
-            "message" => "Product already exist in your cart!!"
-        ]);
+        Response::responseInfo(409, "Product already existed in your cart!!");
         exit();
     }
 
     $productId = $CART->create($connect, $input);
     if ($productId) {
-        http_response_code(201);
-        echo json_encode([
-            "status" => "201",
-            "message" => "created",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(201, "created");
     } else {
-        http_response_code(500);
-        echo json_encode([
-            "status" => 500,
-            "message" => "Fail to save Product to Cart!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(500, "Fail to save Product to Cart!!");
     }
 }
 
@@ -80,12 +60,7 @@ if (preg_match("/carts\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_MET
     // ID trong bảng cart_detail
     $productId = $matches[2];
     $CART->update($connect, $productId, $input);
-    http_response_code(200);
-    echo json_encode([
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+    Response::responseInfo(200, "ok");
 }
 
 /**
@@ -97,13 +72,7 @@ if (preg_match("/carts\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_MET
 
     $productId = $matches[2];
     $CART->delete($connect, $productId);
-    http_response_code(200);
-    echo json_encode([
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
-    echo 1;
+    Response::responseInfo(200, "ok");
 }
 
 /**
@@ -114,10 +83,5 @@ else if (preg_match("/carts\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHO
     $CART->checkUser($userId);
 
     $CART->deleteAll($connect, $userId);
-    http_response_code(200);
-    echo json_encode([
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+    Response::responseInfo(200, "ok");
 }

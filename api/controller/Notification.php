@@ -17,19 +17,9 @@ if ($url == '/notifications' && $_SERVER['REQUEST_METHOD'] == 'GET') {
     } else if($Notification->checkIsAdmin()){
         $data =  $Notification->getAllNotifications($connect, null);
     } else {
-        http_response_code(500);
-        echo json_encode([
-            "status" => "500",
-            "message" => "Access denied!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(500, "Access denied!!");
         exit();
     }
-    http_response_code(200);
-    echo json_encode([
-        "data" => $data,
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+
+    Response::responseData(200, "ok", $data);
 }

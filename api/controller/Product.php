@@ -15,13 +15,7 @@ if (strpos($url, "/") !== 0) {
 if ($url == '/products' && $_SERVER['REQUEST_METHOD'] == 'GET') {
     $products = $PRODUCT->getAll($connect);
 
-    http_response_code(200);
-    echo json_encode([
-        "data" => $products,
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+    Response::responseData(200, "ok", $products);
 }
 
 /**
@@ -32,20 +26,9 @@ if (preg_match("/products\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'
     $product = $PRODUCT->get($connect, $productId);
 
     if ($product) {
-        http_response_code(200);
-        echo json_encode([
-            "data" => $product,
-            "status" => "200",
-            "message" => "ok",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseData(200, "ok", $product);
     } else {
-        http_response_code(404);
-        echo json_encode([
-            "status" => "404",
-            "message" => "Product not found!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(404, "Product not found!!");
     }
 }
 
@@ -61,20 +44,10 @@ if ($url == "/products" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
     $productId = $PRODUCT->create($connect, $input);
 
     if ($productId) {
-        http_response_code(201);
-        echo json_encode([
-            "status" => "201",
-            "message" => "created",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(201, "created");
     }
     else {
-        http_response_code(500);
-        echo json_encode([
-            "status" => 500,
-            "message" => "Fail to save product",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(500, "Fail to save product");
     }
 }
 
@@ -90,22 +63,12 @@ if (preg_match("/products\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'
 
     $product = $PRODUCT->get($connect, $productId);
     if (!$product) {
-        http_response_code(404);
-        echo json_encode([
-            "status" => "404",
-            "message" => "Product not found!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(404, "Product not found!!");
         exit();
     }
 
     $PRODUCT->update($connect, $productId, $input);
-    http_response_code(200);
-    echo json_encode([
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+    Response::responseInfo(200, "ok");
 }
 
 /**
@@ -118,20 +81,10 @@ if (preg_match("/products\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'
     $productId = $matches[1];
     $product = $PRODUCT->get($connect, $productId);
     if (!$product) {
-        http_response_code(404);
-        echo json_encode([
-            "status" => "404",
-            "message" => "Product not found!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(404, "Product not found!!");
     } else {
         $PRODUCT->delete($connect, $productId);
-        http_response_code(200);
-        echo json_encode([
-            "status" => "200",
-            "message" => "ok",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(200, "ok");
     }
 }
 

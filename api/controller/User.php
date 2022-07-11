@@ -42,20 +42,9 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
     $user = $USER->get($connect, $userId);
     // Kiểm tra xem user có tồn tại hay không
     if ($user) {
-        http_response_code(200);
-        echo json_encode([
-            "data" => $user,
-            "status" => "200",
-            "message" => "ok",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseData(200, "ok", $user);
     } else {
-        http_response_code(404);
-        echo json_encode([
-            "status" => "404",
-            "message" => "User not found!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(404, "User not found!!");
     }
 }
 
@@ -68,12 +57,7 @@ if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
     // Nếu người dùng thay đổi username bằng 1 username đã tồn tại thì báo lỗi
     $user = $USER->findByUser($connect, "username='{$input['username']}'");
     if ($user) {
-        http_response_code(409);
-        echo json_encode([
-            "status" => "409",
-            "message" => "User already exist!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(409, "User already exist!!");
         exit();
     }
 
@@ -101,19 +85,11 @@ if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
             "message" => "created",
             "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
         ]);
-
+        Response::responseMergedData(201, "created", array("jwt" => $jwt, "user_id" => $userId));
         // Sau khi tạo 1 user mới, đồng thời tạo 1 giỏ hàng
-        $cart = new Cart();
-        $cart->create($connect, ["user_id" => $userId]);
+        $CART = new Cart();
+        $CART->create($connect, ["user_id" => $userId]);
     }
-//    else {
-//        http_response_code(500);
-//        echo json_encode([
-//            "status" => 500,
-//            "message" => "Fail to save User!!",
-//            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-//        ]);
-//    }
 }
 
 /**
@@ -128,12 +104,7 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
     // Kiểm tra xem người dùng có tồn tại hay không
     $user = $USER->get($connect, $userId);
     if (!$user) {
-        http_response_code(404);
-        echo json_encode([
-            "status" => "404",
-            "message" => "User not found!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(404, "User not found!!");
         exit();
     }
 
@@ -141,24 +112,14 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
     if (!empty($input['username'])) {
         $user = $USER->findByUser($connect, "username='{$input['username']}'");
         if ($user) {
-            http_response_code(409);
-            echo json_encode([
-                "status" => "409",
-                "message" => "User already exist!!",
-                "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-            ]);
+            Response::responseInfo(409, "User already exist!!");
             exit();
         }
     }
 
     // Thực hiện update thông tin người dùng
     $USER->update($connect, $userId, $input);
-    http_response_code(200);
-    echo json_encode([
-        "status" => "200",
-        "message" => "ok",
-        "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-    ]);
+    Response::responseInfo(200, "ok");
 }
 
 /**
@@ -170,20 +131,10 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 
     $user = $USER->get($connect, $userId);
     if (!$user) {
-        http_response_code(404);
-        echo json_encode([
-            "status" => "404",
-            "message" => "User not found!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(404, "User not found!!");
     } else {
         $USER->delete($connect, $userId);
-        http_response_code(200);
-        echo json_encode([
-            "status" => "200",
-            "message" => "ok",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(200, "ok");
     }
 }
 
@@ -207,20 +158,8 @@ if ($url == "/users/sign_in" && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $jwt = JWT::encode($payload, JWT_KEY, JWT_ALG);
 
-        http_response_code(200);
-        echo json_encode([
-            "jwt" => $jwt,
-            "user_id" => $user['id'],
-            "status" => "200",
-            "message" => "ok",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseMergedData(200, "ok", array("jwt" => $jwt, "user_id" => $user['id']));
     } else {
-        http_response_code(401);
-        echo json_encode([
-            "status" => "401",
-            "message" => "Wrong username or password!!",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
+        Response::responseInfo(401, "Wrong username or password!!");
     }
 }

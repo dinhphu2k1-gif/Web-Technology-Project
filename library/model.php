@@ -165,7 +165,7 @@ class Model
      * @param $input
      * @return bool
      */
-    function signIn($connect, $input): bool {
+    function signIn($connect, $input) {
         $sql = "SELECT * FROM $this->_table WHERE username=:username;";
 
         $statement = $connect->prepare($sql);
@@ -191,11 +191,11 @@ class Model
      * @param $username
      * @return mixed
      */
-    function findByUser($connect, $condition)
+    function findByUser($connect, $username)
     {
-        $sql = "SELECT * FROM $this->_table WHERE :condition;";
+        $sql = "SELECT * FROM $this->_table WHERE username = :username;";
         $statement = $connect->prepare($sql);
-        $statement->bindValue(':condition', $condition);
+        $statement->bindValue('username', $username);
         try {
             $statement->execute();
         } catch (PDOException $e) {
@@ -238,11 +238,6 @@ class Model
             $jwt = $header['Authorization'];
         }
         else {
-            http_response_code(401);
-            echo json_encode([
-                "status" => 401,
-                "message" => "Need access token!!"
-            ]);
             Response::responseInfo(401, "Need access token!!");
             exit();
         }

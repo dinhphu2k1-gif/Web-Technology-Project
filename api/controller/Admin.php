@@ -70,7 +70,7 @@ if ($url == "/admins" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $input = json_decode(file_get_contents('php://input'), true);
 
-    $admin = $ADMIN->findByUser($connect, "username='{$input['username']}'");
+    $admin = $ADMIN->findByUser($connect, $input['username']);
     if ($admin) {
         Response::responseInfo(409, "Admin already exist!!");
         exit();
@@ -115,7 +115,7 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
     }
 
     if (!empty($input['username'])) {
-        $admin = $ADMIN->findByUser($connect, "username='{$input['username']}'");
+        $admin = $ADMIN->findByUser($connect, $input['username']);
         if ($admin) {
             Response::responseInfo(409, "Admin already exist!!");
             exit();

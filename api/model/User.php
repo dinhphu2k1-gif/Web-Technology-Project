@@ -19,9 +19,10 @@ class User extends Model
         $sql = "SELECT users.*, carts.id AS cart_id
                 FROM users 
                 INNER JOIN carts ON users.id = carts.user_id
-                WHERE users.id=$id;
+                WHERE users.id=:id;
                 ";
         $statement = $connect->prepare($sql);
+        $statement->bindValue(':id', $id);
         $statement->execute();
 
         return $statement->fetch(PDO::FETCH_ASSOC);

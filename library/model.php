@@ -58,11 +58,7 @@ class Model
         try {
             $statement->execute();
         } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode([
-                "status" => 500,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(500, "Something wrong when executing statement");
             exit();
         }
         $statement->setFetchMode(PDO::FETCH_ASSOC);
@@ -84,11 +80,7 @@ class Model
         try {
             $statement->execute();
         } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode([
-                "status" => 500,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(500, "Something wrong when executing statement");
             exit();
         }
 
@@ -114,11 +106,7 @@ class Model
         try {
             $statement->execute($input);
         } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode([
-                "status" => 500,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(500, "Something wrong when executing statement");
             exit();
         }
 
@@ -140,17 +128,14 @@ class Model
 
         $sql = "UPDATE $this->_table SET "
             . implode(', ', $params)
-            . " WHERE id=$id;";
+            . " WHERE id= :id;";
 
         $statement = $connect->prepare($sql);
+        $input = array_merge($input, array("id" => $id));
         try {
             $statement->execute($input);
         } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode([
-                "status" => 500,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(500, "Updated failed!!");
             exit();
         }
     }
@@ -163,17 +148,13 @@ class Model
      */
     function delete($connect, $id)
     {
-        $sql = "DELETE FROM $this->_table WHERE id=$id;";
+        $sql = "DELETE FROM $this->_table WHERE id=:id;";
         $statement = $connect->prepare($sql);
-
+        $statement->bindValue(':id', $id);
         try {
             $statement->execute();
         } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode([
-                "status" => 500,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(500, "Something wrong when executing statement");
             exit();
         }
     }
@@ -184,7 +165,7 @@ class Model
      * @param $input
      * @return bool
      */
-    function signIn($connect, $input) {
+    function signIn($connect, $input): bool {
         $sql = "SELECT * FROM $this->_table WHERE username=:username;";
 
         $statement = $connect->prepare($sql);
@@ -192,11 +173,7 @@ class Model
         try {
             $statement->execute();
         } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode([
-                "status" => 500,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(500, "Something wrong when executing statement");
             exit();
         }
 
@@ -216,17 +193,13 @@ class Model
      */
     function findByUser($connect, $condition)
     {
-        $sql = "SELECT * FROM $this->_table WHERE {$condition};";
+        $sql = "SELECT * FROM $this->_table WHERE :condition;";
         $statement = $connect->prepare($sql);
-
+        $statement->bindValue(':condition', $condition);
         try {
             $statement->execute();
         } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode([
-                "status" => 500,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(500, "Something wrong when executing statement");
             exit();
         }
         return $statement->fetch(PDO::FETCH_ASSOC);
@@ -270,6 +243,7 @@ class Model
                 "status" => 401,
                 "message" => "Need access token!!"
             ]);
+            Response::responseInfo(401, "Need access token!!");
             exit();
         }
 
@@ -277,19 +251,11 @@ class Model
             $decode_data = JWT::decode($jwt, new Key(JWT_KEY, JWT_ALG));
 
             if (!$decode_data->is_admin) {
-                http_response_code(401);
-                echo json_encode([
-                    "status" => 401,
-                    "message" => "Access Denied"
-                ]);
+                Response::responseInfo(401, "Access Denied!!");
                 exit();
             }
         } catch (Exception $e) {
-            http_response_code(401);
-            echo json_encode([
-                "status" => 401,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(401, "Decode date occur error");
             exit();
         }
         return true;
@@ -307,11 +273,7 @@ class Model
             $jwt = $header['Authorization'];
         }
         else {
-            http_response_code(401);
-            echo json_encode([
-                "status" => 401,
-                "message" => "Need access token!!"
-            ]);
+            Response::responseInfo(401, "Need access token!!");
             exit();
         }
 
@@ -321,20 +283,12 @@ class Model
             // Nếu User không phải là Admin hoặc cùng ID thì không được phép lấy dữ liệu
             if (!$decode_data->is_admin) {
                 if ($decode_data->id != $id) {
-                    http_response_code(401);
-                    echo json_encode([
-                        "status" => 401,
-                        "message" => "Access Denied"
-                    ]);
+                    Response::responseInfo(401, "Access Denied!!");
                     exit();
                 }
             }
         } catch (Exception $e) {
-            http_response_code(401);
-            echo json_encode([
-                "status" => 401,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(401, "Decode data occurred error!!");
             exit();
         }
     }

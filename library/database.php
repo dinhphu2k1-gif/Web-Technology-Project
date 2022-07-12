@@ -14,6 +14,7 @@ class Database {
             return $connect;
         }
         catch (PDOException $e) {
+            echo "fdfasf";
             exit($e->getMessage());
         }
     }

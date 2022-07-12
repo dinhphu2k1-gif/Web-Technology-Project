@@ -13,9 +13,10 @@ if (strpos($url, "/") !== 0) {
  * Đăng nhập
  */
 if ($url == "/admins/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
+    echo "1";
     $input = json_decode(file_get_contents("php://input"), true);
     $admin = $ADMIN->signIn($connect, $input);
-    echo "1";
+
     if ($admin) {
         $payload = [
             "iss" => "localhost",

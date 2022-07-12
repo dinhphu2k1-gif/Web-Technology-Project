@@ -13,9 +13,10 @@ if (strpos($url, "/") !== 0) {
  * Đăng nhập
  */
 if ($url == "/admins/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
+    echo "1";
     $input = json_decode(file_get_contents("php://input"), true);
     $admin = $ADMIN->signIn($connect, $input);
-    echo "1";
+
     if ($admin) {
         $payload = [
             "iss" => "localhost",
@@ -69,7 +70,7 @@ if ($url == "/admins" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $input = json_decode(file_get_contents('php://input'), true);
 
-    $admin = $ADMIN->findByUser($connect, "username='{$input['username']}'");
+    $admin = $ADMIN->findByUser($connect, $input['username']);
     if ($admin) {
         Response::responseInfo(409, "Admin already exist!!");
         exit();
@@ -114,7 +115,7 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
     }
 
     if (!empty($input['username'])) {
-        $admin = $ADMIN->findByUser($connect, "username='{$input['username']}'");
+        $admin = $ADMIN->findByUser($connect, $input['username']);
         if ($admin) {
             Response::responseInfo(409, "Admin already exist!!");
             exit();

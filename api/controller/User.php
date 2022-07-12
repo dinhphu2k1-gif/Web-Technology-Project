@@ -55,7 +55,7 @@ if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
 
     // Nếu người dùng thay đổi username bằng 1 username đã tồn tại thì báo lỗi
-    $user = $USER->findByUser($connect, "username='{$input['username']}'");
+    $user = $USER->findByUser($connect, $input['username']);
     if ($user) {
         Response::responseInfo(409, "User already exist!!");
         exit();
@@ -64,6 +64,9 @@ if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
     // mã hoá mật khẩu
     $input['password'] = password_hash($input['password'], PASSWORD_DEFAULT);
     $userId = $USER->create($connect, $input);
+    // Sau khi tạo 1 user mới, đồng thời tạo 1 giỏ hàng
+    $CART = new Cart();
+    $CART->create($connect, ["user_id" => $userId]);
 
     if ($userId) {
         $payload = [
@@ -77,18 +80,8 @@ if ($url == "/users" && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $jwt = JWT::encode($payload, JWT_KEY, JWT_ALG);
 
-        http_response_code(201);
-        echo json_encode([
-            "jwt" => $jwt,
-            "user_id" => $userId,
-            "status" => "201",
-            "message" => "created",
-            "time" => microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"]
-        ]);
         Response::responseMergedData(201, "created", array("jwt" => $jwt, "user_id" => $userId));
-        // Sau khi tạo 1 user mới, đồng thời tạo 1 giỏ hàng
-        $CART = new Cart();
-        $CART->create($connect, ["user_id" => $userId]);
+
     }
 }
 
@@ -110,7 +103,7 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 
     // Kiểm tra nếu tên người dùng đã được sử dụng thì không cho đổi
     if (!empty($input['username'])) {
-        $user = $USER->findByUser($connect, "username='{$input['username']}'");
+        $user = $USER->findByUser($connect, $input['username']);
         if ($user) {
             Response::responseInfo(409, "User already exist!!");
             exit();

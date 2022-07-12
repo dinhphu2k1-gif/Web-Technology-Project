@@ -30,11 +30,7 @@ class Bill extends Model {
         try {
             $statement->execute();
         } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode([
-                "status" => 500,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(500, "Some thing wrong when execute statement!!");
             exit();
         }
         $statement->setFetchMode(PDO::FETCH_ASSOC);
@@ -50,19 +46,15 @@ class Bill extends Model {
      */
     function getAllBills($connect, $userId) {
         $sql = "SELECT * FROM bills 
-                WHERE user_id = {$userId}
+                WHERE user_id = :userId
                 ORDER BY time_create DESC;
         ";
         $statement = $connect->prepare($sql);
-
+        $statement->bindValue(':userId', $userId);
         try {
             $statement->execute();
         } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode([
-                "status" => 500,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(500, "Some thing wrong when execute statement!!");
             exit();
         }
         $statement->setFetchMode(PDO::FETCH_ASSOC);
@@ -79,19 +71,15 @@ class Bill extends Model {
     function getProducts($connect, $billId)
     {
         $sql = "SELECT * FROM bill_details
-                WHERE bill_id = {$billId};
+                WHERE bill_id = :billId;
                 ";
 
         $statement = $connect->prepare($sql);
-
+        $statement->bindValue(':billId', $billId);
         try {
             $statement->execute();
         } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode([
-                "status" => 500,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(500, "Some thing wrong when execute statement!!");
             exit();
         }
         $statement->setFetchMode(PDO::FETCH_ASSOC);
@@ -108,32 +96,36 @@ class Bill extends Model {
      */
     function addProducts($connect, $userId, $billId) {
         $sql = "INSERT INTO bill_details (bill_id, product_id, quantity, total_price)
-                SELECT {$billId}, cd.product_id, cd.quantity, cd.total_price
+                SELECT :billId, cd.product_id, cd.quantity, cd.total_price
                 FROM carts AS c 
                 INNER JOIN cart_details AS cd ON c.id = cd.cart_id
-                WHERE c.user_id = $userId;
+                WHERE c.user_id = :userId;
         ";
-
         $statement = $connect->prepare($sql);
+        $statement->bindValue(':billId', $billId);
+        $statement->bindValue(':userId', $userId);
         try {
             $statement->execute();
         } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode([
-                "status" => 500,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(500, "Some thing wrong when execute statement!!");
             exit();
         }
     }
 
-    function getOrder($connect, $userId, $orderId)
-    {
-        $sql = "SELECT * FROM bills 
-                WHERE 
-        ";
-    }
-    public function updateStatus($connect, $id, $status){
+//    function getOrder($connect, $userId, $orderId)
+//    {
+//        $sql = "SELECT * FROM bills
+//                WHERE
+//        ";
+//    }
+    /**
+     * cập nhật trạng thái đơn đặt hàng.
+     * @param $connect
+     * @param $id
+     * @param $status
+     * @return boolean
+     */
+    public function updateStatus($connect, $id, $status): bool{
         $bill = $this->get($connect, $id);
         if($bill){
             $sql = "UPDATE `bills` SET status = :status where id = :id;";

@@ -11,7 +11,12 @@ class Notification extends Model {
         $this->message = $message;
         $this->isadmin = $isadmin;
     }
-    public function insertNotification($connect){
+
+    /**
+     * @param $connect
+     * @return bool
+     */
+    public function insertNotification($connect): bool {
         $input = array("message" => $this->message, "bill_id" => $this->bill_id, "isadmin" => $this->isadmin, "CreatedAt" => date("Y/m/d h:i:s",time()));
         $this->create($connect, $input);
         return true;
@@ -37,11 +42,7 @@ class Notification extends Model {
         try {
             $statement->execute();
         } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode([
-                "status" => 500,
-                "message" => $e->getMessage()
-            ]);
+            Response::responseInfo(500, "Something wrong when executing statement");
             exit();
         }
         $statement->setFetchMode(PDO::FETCH_ASSOC);

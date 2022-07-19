@@ -22,6 +22,11 @@ if ($url == '/bills' && $_SERVER['REQUEST_METHOD'] == 'GET') {
     $BILL->checkIsAdmin();
 
     $bills = $BILL->getAll($connect);
+    for ($i = 0; $i < count($bills); $i++) {
+        $billId = $bills[$i]['id'];
+        $products = $BILL->getProducts($connect, $billId);
+        $bills[$i]['list_products'] = $products;
+    }
 
     Response::responseData(200, "ok", $bills);
 }

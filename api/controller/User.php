@@ -114,6 +114,33 @@ if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
     $USER->update($connect, $userId, $input);
     Response::responseInfo(200, "ok");
 }
+/**
+ * Cập nhật 1 admin
+ */
+if (preg_match("/users\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'PUT') {
+    $ADMIN->checkIsAdmin();
+
+    $adminId = $matches[1];
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $admin = $ADMIN->get($connect, $adminId);
+    if (!$admin) {
+        Response::responseInfo(404, "Admin not found!!");
+        exit();
+    }
+
+    if (!empty($input['username'])) {
+        $admin = $ADMIN->findByUser($connect, $input['username']);
+        if ($admin) {
+            Response::responseInfo(409, "Admin already exist!!");
+            exit();
+        }
+    }
+
+    $ADMIN->update($connect, $adminId, $input);
+
+    Response::responseInfo(200, "ok");
+}
 
 /**
  * Xoá 1 users

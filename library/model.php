@@ -106,6 +106,7 @@ class Model
         try {
             $statement->execute($input);
         } catch (PDOException $e) {
+            echo $e->getMessage();
             Response::responseInfo(500, "Something wrong when executing statement");
             exit();
         }

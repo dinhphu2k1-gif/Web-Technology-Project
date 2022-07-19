@@ -1,8 +1,6 @@
 <?php
 require_once (ROOT . "/api/model/Cart.php");
 require_once (ROOT . "/api/model/Cart_Detail.php");
-use \Firebase\JWT\JWT;
-use \Firebase\JWT\Key;
 
 $CART = new Cart_Detail();
 
@@ -18,8 +16,9 @@ if (strpos($url, "/") !== 0) {
 if (preg_match("/carts\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'GET') {
     $userId = $matches[1];
     $CART->checkUser($userId);
+    $cartId = $CART->getCartId($connect, $userId)['id'];
 
-    $products = $CART->getAllProducts($connect, $userId);
+    $products = $CART->getAllProducts($connect, $cartId);
 
     Response::responseData(200, "ok", $products);
 }
@@ -30,16 +29,17 @@ if (preg_match("/carts\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
 if (preg_match("/carts\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $userId = $matches[1];
     $CART->checkUser($userId);
+    $cartId = $CART->getCartId($connect, $userId)['id'];
 
     $input = json_decode(file_get_contents('php://input'), true);
 
     // Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng hay chưa
-    $productExist = $CART->findByProductId($connect, $input['cart_id'], $input['product_id']);
+    $productExist = $CART->findByProductId($connect, $cartId, $input['product_id']);
     if ($productExist) {
         Response::responseInfo(409, "Product already existed in your cart!!");
         exit();
     }
-
+    $input['cart_id'] = $cartId;
     $productId = $CART->create($connect, $input);
     if ($productId) {
         Response::responseInfo(201, "created");
@@ -57,21 +57,24 @@ if (preg_match("/carts\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_MET
     $CART->checkUser($userId);
 
     $input = json_decode(file_get_contents('php://input'), true);
+    $cartId = $CART->getCartId($connect, $userId)['id'];
     // ID trong bảng cart_detail
     $productId = $matches[2];
-    $CART->update($connect, $productId, $input);
+    $CART->updateCart($connect, $cartId, $productId, $input);
     Response::responseInfo(200, "ok");
 }
 
 /**
- * API xoá sản phẩm trong giỏ hàng
+ * API xoá sản phẩm trong giỏ hàng bằng id cartDetail
  */
 if (preg_match("/carts\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
     $userId = $matches[1];
     $CART->checkUser($userId);
-
-    $productId = $matches[2];
-    $CART->delete($connect, $productId);
+    $cartId = $CART->getCartId($connect, $userId)['id'];
+//    $productId = $matches[2];
+//    $CART->removeProduct($connect, $cartId, $productId);
+    $cartDetailId = $matches[2];
+    $CART->delete($connect, $cartDetailId);
     Response::responseInfo(200, "ok");
 }
 
@@ -81,7 +84,7 @@ if (preg_match("/carts\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_MET
 else if (preg_match("/carts\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'DELETE') {
     $userId = $matches[1];
     $CART->checkUser($userId);
-
-    $CART->deleteAll($connect, $userId);
+    $cartId = $CART->getCartId($connect, $userId)['id'];
+    $CART->deleteAll($connect, $cartId);
     Response::responseInfo(200, "ok");
 }

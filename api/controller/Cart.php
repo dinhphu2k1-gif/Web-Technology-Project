@@ -59,8 +59,9 @@ if (preg_match("/carts\/(\d+)\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_MET
     $input = json_decode(file_get_contents('php://input'), true);
     $cartId = $CART->getCartId($connect, $userId)['id'];
     // ID trong bảng cart_detail
-    $productId = $matches[2];
-    $CART->updateCart($connect, $cartId, $productId, $input);
+    $cartDetailId = $matches[2];
+    $CART->update($connect, $cartDetailId, $input);
+//    $CART->updateCart($connect, $cartId, $productId, $input);
     Response::responseInfo(200, "ok");
 }
 

@@ -109,7 +109,9 @@ if (preg_match("/bills\/(\d+)/", $url, $matches) && $_SERVER['REQUEST_METHOD'] =
         $BILL->addProducts($connect, $userId, $billId);
 
         // xoá các sản phẩm trong giỏ hàng
-        $CART->deleteAll($connect, $userId);
+        $CART_DETAIL = new Cart_Detail();
+        $cartId = $CART_DETAIL->getCartId($connect, $userId)['id'];
+        $CART_DETAIL->deleteAll($connect, $cartId);
         $NOTIFICATION->init($billId, "Có một đơn đặt hàng mới (Mã đơn hàng {$billId})", 'yes');
         $NOTIFICATION->insertNotification($connect);
         $NOTIFICATION->init($billId, "Bạn đã đặt đơn hàng thành công (Mã đơn hàng {$billId})", 'no');

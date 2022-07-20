@@ -20,7 +20,6 @@ if ($url == "/admins/sign_in" &&  $_SERVER['REQUEST_METHOD'] == 'POST') {
         $payload = [
             "iss" => "localhost",
             "iat" => time(),
-            "exp" => time() + 86400,
             "aud" => "myadmins",
             "id" => $admin['id'],
             "is_admin" => true

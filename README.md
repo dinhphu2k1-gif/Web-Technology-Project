@@ -119,3 +119,10 @@ VD: ![img.png](image/img_17.png)
 ### 6. Notification
 - GET  ```/notifications``` : lấy các thông báo (Admin và user)
 - VD: ![img.png](image/img_18.png)
+
+
+
+
+
+
+son
